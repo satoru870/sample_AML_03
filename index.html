@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AML/CFT Practical Master Portal - 業務知識学習ポータル</title>
+    <style>
+        :root {
+            --bg-main: #0F172A;
+            --bg-card: #1E293B;
+            --bg-card-hover: #334155;
+            --accent-gold: #F59E0B;
+            --accent-cyan: #06B6D4;
+            --accent-blue: #3B82F6;
+            --color-red: #EF4444;
+            --color-green: #10B981;
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --border: rgba(255, 255, 255, 0.1);
+            --radius-lg: 14px;
+            --radius-md: 8px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background: var(--bg-main); color: var(--text-main); line-height: 1.6; padding-bottom: 60px; }
+
+        /* Header */
+        .header { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, #FFF, var(--accent-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-tabs { display: flex; gap: 8px; overflow-x: auto; }
+        .nav-btn { background: transparent; border: 1px solid var(--border); color: var(--text-sub); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .nav-btn.active, .nav-btn:hover { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
+
+        /* Main Container */
+        .container { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+
+        .section-panel { display: none; flex-direction: column; gap: 20px; }
+        .section-panel.active { display: flex; }
+
+        /* Cards */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .card-title { font-size: 1.15rem; font-weight: 800; color: #FFF; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--accent-blue); padding-bottom: 8px; }
+        .card-subtitle { font-size: 0.9rem; font-weight: 700; color: var(--accent-gold); margin: 12px 0 6px; }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+
+        /* Feature Badge */
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid var(--color-red); }
+        .badge-cyan { background: rgba(6, 182, 212, 0.2); color: #67E8F9; border: 1px solid var(--accent-cyan); }
+        .badge-gold { background: rgba(245, 158, 11, 0.2); color: #FDE047; border: 1px solid var(--accent-gold); }
+
+        /* Workflow Step Box */
+        .flow-box { background: rgba(255,255,255,0.03); border-left: 4px solid var(--accent-cyan); padding: 14px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-bottom: 12px; }
+        .flow-title { font-weight: 800; font-size: 0.95rem; color: var(--accent-cyan); }
+
+        /* Interactive Quiz */
+        .quiz-option { background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .quiz-option:hover { background: var(--bg-card-hover); border-color: var(--accent-cyan); }
+        .quiz-option.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--color-green); color: #A7F3D0; font-weight: 700; }
+        .quiz-option.wrong { background: rgba(239, 68, 68, 0.2); border-color: var(--color-red); color: #FCA5A5; font-weight: 700; }
+
+        .explain-box { display: none; background: rgba(0,0,0,0.4); padding: 14px; border-radius: var(--radius-md); margin-top: 12px; font-size: 0.85rem; border: 1px solid var(--border); }
+        .explain-box.active { display: block; }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">🛡️ AML/CFT Practical Master Portal</div>
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="showTab(0)">1. 基礎・RBA体制</button>
+            <button class="nav-btn" onclick="showTab(1)">2. 5大犯罪手法</button>
+            <button class="nav-btn" onclick="showTab(2)">3. 実務業務フロー</button>
+            <button class="nav-btn" onclick="showTab(3)">4. 実践ケース演習</button>
+            <button class="nav-btn" onclick="showTab(4)">5. 理解度テスト</button>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <!-- Tab 1: 基礎・RBA体制 -->
+        <section class="section-panel active" id="tab-0">
+            <div class="card">
+                <div class="card-title">🏛️ 1. リスクベース・アプローチ（RBA）と「3つの防衛線」</div>
+                <p style="font-size:0.9rem; color:var(--text-sub);">
+                    マネロン対策の根幹は、一律の機械的対応ではなく、リスクの大きさに応じたリソース配分を行う<b>RBA（Risk-Based Approach）</b>です。組織全体で役割を分担する「3つの防衛線」を理解しましょう。
+                </p>
+
+                <div class="grid-3" style="margin-top:16px;">
+                    <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:8px; border:1px solid var(--border);">
+                        <span class="badge badge-cyan">第 1 防衛線</span>
+                        <div class="card-subtitle">営業店・窓口・事業部門</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">
+                            ・顧客との最初の接点（水際対策）<br>
+                            ・取引時確認（KYC）およびCDDの実施<br>
+                            ・対面での違和感・属性ミスマッチの検知<br>
+                            ・不審点発見時のリスク評価手動格上げ
+                        </p>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:8px; border:1px solid var(--border);">
+                        <span class="badge badge-gold">第 2 防衛線</span>
+                        <div class="card-subtitle">AML・コンプライアンス管理部門</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">
+                            ・全社的リスク評価書（FIRA）の作成<br>
+                            ・取引モニタリング・フィルタリングルールの策定<br>
+                            ・疑わしい取引の届出（STR）の最終判定・届出<br>
+                            ・1線に対する指導およびEDD承認
+                        </p>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:14px; border-radius:8px; border:1px solid var(--border);">
+                        <span class="badge badge-red">第 3 防衛線</span>
+                        <div class="card-subtitle">内部監査部門</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">
+                            ・1線および2線から完全に独立<br>
+                            ・AML/CFT管理態勢の運用状況の独立検証<br>
+                            ・定期的なサンプルチェックと取締役会報告
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔄 マネー・ローンダリングの3段階プロセス</div>
+                <div class="grid-3">
+                    <div class="flow-box">
+                        <div class="flow-title">1. Placement (配置)</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">犯罪で得た不法な現金を、銀行預金や暗号資産購入等により金融システムへ投入する第一段階。</p>
+                    </div>
+                    <div class="flow-box" style="border-color:var(--accent-gold);">
+                        <div class="flow-title" style="color:var(--accent-gold);">2. Layering (成層化)</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">多数の口座間送金、海外送金、暗号資産ミキサー等を用いて、資金の追跡を困難にする複雑化段階。</p>
+                    </div>
+                    <div class="flow-box" style="border-color:var(--color-green);">
+                        <div class="flow-title" style="color:var(--color-green);">3. Integration (統合)</div>
+                        <p style="font-size:0.82rem; color:var(--text-sub);">浄化された資金を不動産購入や事業投資にあて、正当な資産として経済社会に再流入させる最終段階。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: 5大犯罪手法 -->
+        <section class="section-panel" id="tab-1">
+            <div class="card">
+                <div class="card-title">⚠️ 2. 主要5大手法とレッド・フラッグ指標（不自然な取引の兆候）</div>
+                
+                <div class="grid-2">
+                    <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+                        <span class="badge badge-red">手法 1</span>
+                        <div class="card-subtitle">預貯金口座悪用・マネーミュール</div>
+                        <p style="font-size:0.83rem; color:var(--text-sub);">
+                            <b>概要:</b> SNS等で募集された「闇バイト」や帰国外国人から譲渡・売買された口座を資金流出先に悪用。<br>
+                            <b>🚨 レッドフラッグ:</b> 21歳学生口座に突然3,000万円の海外着金、休眠口座の突然の高額稼働。
+                        </p>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+                        <span class="badge badge-red">手法 2</span>
+                        <div class="card-subtitle">暗号資産・電子決済・ミキサー悪用</div>
+                        <p style="font-size:0.83rem; color:var(--text-sub);">
+                            <b>概要:</b> 追跡困難な匿名コイン（モネロ等）への変更、ミキシングサービス利用、アンホステッドウォレットP2P取引。<br>
+                            <b>🚨 レッドフラッグ:</b> トラベルルール回避目的の即時出金、海外VASP経由の未説明送金。
+                        </p>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+                        <span class="badge badge-red">手法 3</span>
+                        <div class="card-subtitle">ペーパーカンパニー・BO隠蔽</div>
+                        <p style="font-size:0.83rem; color:var(--text-sub);">
+                            <b>概要:</b> 実質的支配者（BO）に反社や犯罪組織が潜み、バーチャルオフィスで設立した実態のない法人口座を悪用。<br>
+                            <b>🚨 レッドフラッグ:</b> 設立3ヶ月で月間数千万円の海外送金、株主情報の開示拒否。
+                        </p>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+                        <span class="badge badge-red">手法 4</span>
+                        <div class="card-subtitle">DNFBP（不動産・貴金属・士業）悪用</div>
+                        <p style="font-size:0.83rem; color:var(--text-sub);">
+                            <b>概要:</b> 高額な現金による不動産買収や高級時計・宝石購入、弁護士・司法書士等の預託金口座悪用。<br>
+                            <b>🚨 レッドフラッグ:</b> 市場価格とかけ離れた売買契約、第三者名義の海外送金による不動産決済。
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; margin-top:16px;">
+                    <span class="badge badge-red">手法 5</span>
+                    <div class="card-subtitle">貿易利用マネー・ローンダリング（TBML）</div>
+                    <p style="font-size:0.83rem; color:var(--text-sub);">
+                        <b>概要:</b> 実際の売買商品の価格を偽装（インボイス過大・過少請求）し、貿易代金名目で国境を越えて不正資金を移転。<br>
+                        <b>🚨 レッドフラッグ:</b> 中古車や魚介類の輸出入において、商品実態と送金金額が著しく乖離している取引。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: 実務業務フロー -->
+        <section class="section-panel" id="tab-2">
+            <div class="card">
+                <div class="card-title">📋 3. 窓口・実務者のステップバイステップ業務フロー</div>
+                
+                <div class="flow-box">
+                    <div class="flow-title">Step 1: 本人確認（KYC）/ 真正性・同一性チェック</div>
+                    <p style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">
+                        ・提示された身分証（運転免許証・マイナンバー・在留カード）の変造痕やICチップ読み取り照合。<br>
+                        ・顔写真と来店客の見た目（年齢感、目元のホクロ、骨格）を照合し「なりすまし」を水際阻止。
+                    </p>
+                </div>
+
+                <div class="flow-box" style="border-color:var(--accent-gold);">
+                    <div class="flow-title" style="color:var(--accent-gold);">Step 2: 顧客属性調査（CDD）& 動的リスク評価</div>
+                    <p style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">
+                        ・職業、年収、国籍、取引目的、予定金額のバランス（整合性）をチェック。<br>
+                        ・不整合（例: 21歳学生で3,000万円送金）を発見した場合、手動で顧客リスクランクを<b>「HIGH」へ格上げ</b>。
+                    </p>
+                </div>
+
+                <div class="flow-box" style="border-color:var(--accent-blue);">
+                    <div class="flow-title" style="color:var(--accent-blue);">Step 3: スクリーニング & EDD（詳細調査）</div>
+                    <p style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">
+                        ・本人および実質的支配者（BO）を制裁・PEP・反社データベースと照合。<br>
+                        ・高リスク取引に対し、資金の源泉（SoW / SoF：所得証明・契約書等）の提出要求と上級管理職の承認取得。
+                    </p>
+                </div>
+
+                <div class="flow-box" style="border-color:var(--color-red);">
+                    <div class="flow-title" style="color:var(--color-red);">Step 4: 疑わしい取引の届出（STR）</div>
+                    <p style="font-size:0.85rem; color:var(--text-sub); margin-top:4px;">
+                        ・SoW拒否や不審取引確定時、取引を遮断（謝絶）し、コンプライアンス部を通じて国家公安委員会（JAFIC）へ直ちに届出。<br>
+                        ・<b>重要:</b> 顧客へ届出の事実を漏らす行為（Tipping-off）は固く禁止。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: 実践ケース演習 -->
+        <section class="section-panel" id="tab-3">
+            <div class="card">
+                <div class="card-title">🎮 4. 実践ケーススタディ（窓口審査シミュレーション）</div>
+                
+                <div style="background:rgba(0,0,0,0.3); padding:16px; border-radius:8px; border:1px solid var(--border);">
+                    <span class="badge badge-gold">シナリオケース</span>
+                    <div class="card-subtitle">21歳学生による高額海外電信送金の申し出</div>
+                    <p style="font-size:0.88rem; color:#FFF; margin-bottom:12px;">
+                        「海外のプライベートバンク口座へ3,000万円を至急送金したい」と21歳の大学生が窓口に来店。ソワソワしながらスマホで誰かと会話している。身分証ICチップ照合は問題なし。
+                    </p>
+
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">あなたの取るべき適切な対応を選択してください：</div>
+                    
+                    <div class="quiz-option" onclick="checkSim(this, false, '身分証に問題がなくても、属性（21歳学生）と金額（3,000万円）が著しく不整合です。そのまま承認するとマネーミュール悪用を見過ごすことになります。')">
+                        A. 本人確認書類のICチップ照合が一致しているため、そのまま送金手続を承認する。
+                    </div>
+
+                    <div class="quiz-option" onclick="checkSim(this, true, '正解！属性不整合を察知してリスク格付をHIGHへ引き上げ、資金源（SoW）の裏付け資料提出を求めるのが正しい実務対応です。書類提出拒否時は謝絶・STR届出となります。')">
+                        B. 属性と金額の不整合を察知し、リスク評価を手動で「HIGH」へ格上げして資金源証跡（SoW）の提出を要求する。
+                    </div>
+
+                    <div class="quiz-option" onclick="checkSim(this, false, '学生であることだけを理由に即座に警察通報するのではなく、まずはEDD（SoW要請）を行い実態を確認する手続が必要です。')">
+                        C. 学生であるため、何の確認も行わず即座に店頭で警察へ通報する。
+                    </div>
+
+                    <div class="explain-box" id="sim-explain"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 5: 理解度テスト -->
+        <section class="section-panel" id="tab-4">
+            <div class="card">
+                <div class="card-title">📝 5. 業務理解度セルフチェック（全3問）</div>
+                
+                <div id="quiz-container">
+                    <div style="margin-bottom:20px;">
+                        <div style="font-size:0.9rem; font-weight:700; color:var(--accent-cyan);">Q1. 疑わしい取引の届出（STR）の運用として望ましいとされる期間はどれか？</div>
+                        <div class="quiz-option" onclick="checkTest(this, false)">A. 毎月末にまとめて1ヶ月分を一括届出する</div>
+                        <div class="quiz-option" onclick="checkTest(this, true)">B. 判定後直ちに手続を開始し、検知から1ヶ月以内を目処に届出を完了する</div>
+                        <div class="quiz-option" onclick="checkTest(this, false)">C. 警察からの照会が届くまで最長1年間保留する</div>
+                    </div>
+
+                    <div style="margin-bottom:20px;">
+                        <div style="font-size:0.9rem; font-weight:700; color:var(--accent-cyan);">Q2. 法人の「実質的支配者（BO）」を特定する際、原則として遡るべき議決権割合は？</div>
+                        <div class="quiz-option" onclick="checkTest(this, false)">A. 5%超</div>
+                        <div class="quiz-option" onclick="checkTest(this, true)">B. 25%超を直接・間接保有する自然人</div>
+                        <div class="quiz-option" onclick="checkTest(this, false)">C. 50%超を保有する法人組織</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function showTab(idx) {
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === idx);
+            });
+            document.querySelectorAll('.section-panel').forEach((panel, i) => {
+                panel.classList.toggle('active', i === idx);
+            });
+        }
+
+        function checkSim(el, isCorrect, explainText) {
+            const expBox = document.getElementById('sim-explain');
+            document.querySelectorAll('#tab-3 .quiz-option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+
+            if (isCorrect) {
+                el.classList.add('correct');
+                expBox.innerHTML = `<strong style="color:var(--color-green);">⭕️ 正解！</strong><br>${explainText}`;
+            } else {
+                el.classList.add('wrong');
+                expBox.innerHTML = `<strong style="color:var(--color-red);">❌ 不正解...</strong><br>${explainText}`;
+            }
+            expBox.classList.add('active');
+        }
+
+        function checkTest(el, isCorrect) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.quiz-option').forEach(opt => opt.style.pointerEvents = 'none');
+            if (isCorrect) {
+                el.classList.add('correct');
+            } else {
+                el.classList.add('wrong');
+            }
+        }
+    </script>
+</body>
+</html>
